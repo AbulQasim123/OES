@@ -8,6 +8,8 @@ use App\Models\Subject;
 use App\Models\Exam;
 use App\Models\Question;
 use App\Models\User;
+use App\Models\UploadModule;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -17,8 +19,9 @@ use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
-        // Add Subject
-    public function AddSubject(Request $request){
+    // Add Subject
+    public function AddSubject(Request $request)
+    {
         try {
             Subject::insert([
                 'subject' => $request->subject,
@@ -28,8 +31,9 @@ class AdminController extends Controller
             return response()->json(['status' => false, 'msg' => $e->getMessage()]);
         }
     }
-        // Edit Subject
-    public function EditSubject(Request $request){
+    // Edit Subject
+    public function EditSubject(Request $request)
+    {
         try {
             $subject = Subject::find($request->edit_subjectid);
             $subject->subject = $request->edit_subject;
@@ -39,24 +43,27 @@ class AdminController extends Controller
             return response()->json(['status' => false, 'msg' => $e->getMessage()]);
         }
     }
-        // Delete Subject
-    public function DeleteSubject(Request $request){
+    // Delete Subject
+    public function DeleteSubject(Request $request)
+    {
         try {
-            Subject::where('id',$request->delete_subjectid)->delete();
+            Subject::where('id', $request->delete_subjectid)->delete();
             return response()->json(['status' => true, 'msg' => 'Subject Deleted Successfully.']);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'msg' => $e->getMessage()]);
         }
     }
 
-        // Exam Dashboard load
-    public function ExamDashboard(){
+    // Exam Dashboard load
+    public function ExamDashboard()
+    {
         $subjects = Subject::all();
         $exams = Exam::with('subjects')->get();
-        return view('/admin/exam-dashboard',['subjects'=> $subjects,'exams'=> $exams]);
+        return view('/admin/exam-dashboard', ['subjects' => $subjects, 'exams' => $exams]);
     }
-        // Add Exam model
-    public function addExam(Request $request){
+    // Add Exam model
+    public function addExam(Request $request)
+    {
         try {
             Exam::insert([
                 'exam_name' => $request->exam,
@@ -68,20 +75,22 @@ class AdminController extends Controller
             return response()->json(['status' => true, 'msg' => 'Exam Added Successfully.']);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'msg' => $e->getMessage()]);
-        } 
+        }
     }
-        // Get Exam Details
-    public function GetExamDetail($id){
+    // Get Exam Details
+    public function GetExamDetail($id)
+    {
         try {
-            $exams = Exam::where('id',$id)->get();
+            $exams = Exam::where('id', $id)->get();
             return response()->json(['status' => true, 'data' => $exams]);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'msg' => $e->getMessage()]);
         }
     }
 
-        // Edit Subject
-    public function EditExam(Request $request){
+    // Edit Subject
+    public function EditExam(Request $request)
+    {
         try {
             $exam = Exam::find($request->editexamid);
             $exam->exam_name = $request->editexamname;
@@ -96,32 +105,35 @@ class AdminController extends Controller
         }
     }
 
-        // Delete Exam
-    public function DeleteExam(Request $request){
+    // Delete Exam
+    public function DeleteExam(Request $request)
+    {
         try {
-            Exam::where('id',$request->delete_examid)->delete();
+            Exam::where('id', $request->delete_examid)->delete();
             return response()->json(['status' => true, 'msg' => 'Exam Deleted Successfully.']);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'msg' => $e->getMessage()]);
         }
     }
 
-        // Question And Answer Dashboard
-    public function QuesAnsDashboard(){
+    // Question And Answer Dashboard
+    public function QuesAnsDashboard()
+    {
         $questions = Question::with('answers')->get();
-        return view('/admin/quesandanswerdashboard',compact('questions'));
+        return view('/admin/quesandanswerdashboard', compact('questions'));
     }
 
-        // Add Question And Answer
-    public function AddQuesAns(Request $request){
+    // Add Question And Answer
+    public function AddQuesAns(Request $request)
+    {
         try {
             $question_id = Question::insertGetId([
                 'question' => $request->question,
             ]);
 
-            foreach($request->answer as $ans){
+            foreach ($request->answer as $ans) {
                 $is_corrects = 0;
-                if($request->is_correct == $ans){
+                if ($request->is_correct == $ans) {
                     $is_corrects = 1;
                 }
 
@@ -136,25 +148,28 @@ class AdminController extends Controller
             return response()->json(['status' => false, 'msg' => $e->getMessage()]);
         }
     }
-        // Delete Question And Answer
-    public function DeleteQuesAns(Request $request){
+    // Delete Question And Answer
+    public function DeleteQuesAns(Request $request)
+    {
         try {
-            Question::where('id',$request->delete_quesid)->delete();
-            Answer::where('question_id',$request->delete_quesid)->delete();
+            Question::where('id', $request->delete_quesid)->delete();
+            Answer::where('question_id', $request->delete_quesid)->delete();
             return response()->json(['status' => true, 'msg' => 'Question And Answer Deleted Successfully.']);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'msg' => $e->getMessage()]);
         }
     }
 
-        // Student Dashboard
-    public function StudentDashoard(){
+    // Student Dashboard
+    public function StudentDashoard()
+    {
         $students = User::where('type', auth()->user()->type =  "Student")->get();
-        return view('/admin/student-dashboard',compact('students'));
+        return view('/admin/student-dashboard', compact('students'));
     }
 
-        // Add Students
-    public function AddStudent(Request $request){
+    // Add Students
+    public function AddStudent(Request $request)
+    {
         try {
             $password = Str::random(8);
             // $password = 'nitu123';
@@ -164,7 +179,7 @@ class AdminController extends Controller
                 'password' => Hash::make($password),
                 'type' => 'Student'
             ]);
-            
+
             $url = URL::to('/');
             $data['name'] = $request->student_name;
             $data['email'] = $request->student_email;
@@ -181,14 +196,15 @@ class AdminController extends Controller
             return response()->json(['status' => false, 'msg' => $e->getMessage()]);
         }
     }
-        // Edit Students
-    public function EditStudent(Request $request){
+    // Edit Students
+    public function EditStudent(Request $request)
+    {
         try {
             $user = User::find($request->edit_student_id);
             $user->name = $request->edit_student_name;
             $user->email = $request->edit_student_email;
             $user->save();
-                // Both are correct for update record
+            // Both are correct for update record
             // DB::table('users')
             //     ->where('id', $request->edit_student_id)
             //     ->update([
@@ -213,13 +229,79 @@ class AdminController extends Controller
         }
     }
 
-        // Delete Students
-    public function DeleteStudent(Request $request){
+    // Delete Students
+    public function DeleteStudent(Request $request)
+    {
         try {
             User::where('id', $request->delete_student_id)->delete();
             return response()->json(['status' => true, 'msg' => 'Student Deleted Successfully.']);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'msg' => $e->getMessage()]);
         }
+    }
+
+    // Upload Module
+    public function showModule()
+    {
+        return view('/admin/uploadmodule');
+    }
+
+    public function fetchModule()
+    {
+        $result = UploadModule::latest()->get();
+        $count = $result->count();
+        $output = '';
+        if ($count > 0) {
+            $i = 1;
+            foreach ($result as $row) {
+                $output .= '<tr>
+                            <td>' . $i . '</td>
+                            <td>' . $row->test_name . '</td>
+                            <td>' . $row->subject . '</td>
+                            <td>' . $row->title . '</td>
+                            <td>' . $row->amount . '</td>
+                            <td><img src="/images/'.$row->image.'" class="img-fluid img-thumbnail" width="100px" alt="Error"></td>
+                            <td>
+                                <button type="button" data-id="' . $row->id . '" class="btn btn-info btn-sm edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button type="button" data-id="' . $row->id . '" class="btn btn-danger btn-sm delete"><i class="fa-solid fa-trash"> </i></button>
+                            </td>
+                        </tr>';
+                $i++;
+            }
+        } else {
+            $output .= '<tr><td align="center" colspan="7">No Data Found</td></tr>';
+        }
+        $data = array(
+            'table_data' => $output,
+        );
+        echo json_encode($data);
+    }
+    public function uploadModule(Request $request)
+    {
+        try {
+            if ($request->ajax()) {
+                $image = $request->file('image');
+                $newImg = uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('images'), $newImg);
+
+                UploadModule::insert([
+                    'test_name' => $request->test_name,
+                    'subject' => $request->subject,
+                    'title' => $request->title,
+                    'amount' => $request->amount,
+                    'image' => $newImg,
+                ]);
+
+                return response()->json(['msg' => 'Module Uploaded Successfully', 'status' => true]);
+            }
+        } catch (Exception $e) {
+            return response()->json(['msg' => $e->getMessage(), 'status' => false]);
+        }
+    }
+
+        // Show All Module
+    public function showAllModule(){
+        $modules = UploadModule::latest()->get();
+        return view('/admin/getmodule', compact('modules'));
     }
 }

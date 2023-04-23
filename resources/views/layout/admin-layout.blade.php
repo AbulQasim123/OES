@@ -8,7 +8,7 @@
 
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script type="text/javascript" src="{{ asset('assets\jquery\jquery.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/js/customscript.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
@@ -37,6 +37,12 @@
                 </li>
                 <li>
                     <a href="/admin/students"><span class="fa fa-graduation-cap mr-3"></span> Students</a>
+                </li>
+                <li>
+                    <a href="{{ route('show.module') }}"><span class="fa fa-upload mr-3"></span> Upload Modulue</a>
+                </li>
+                <li>
+                    <a href="{{ route('get.module') }}"><span class="fa-solid fa-image mr-3"></span> Module Here</a>
                 </li>
                 <li>
                     <a href="/logout"><span class="fa fa-sign-out mr-3"></span> Logout</a>

@@ -68,7 +68,12 @@ Route::group(['middleware'=> ['web','checkAdmin']], function(){
     Route::post('add-students', [AdminController::class,'AddStudent'])->name('AddStudent');
     Route::post('edit-students', [AdminController::class,'EditStudent'])->name('EditStudent');
     Route::post('delete-students', [AdminController::class,'DeleteStudent'])->name('DeleteStudent');
-    
+
+        // Upload Modules
+    Route::get('/admin/show/module', [AdminController::class,'showModule'])->name('show.module');
+    Route::get('/admin/fetch/module', [AdminController::class,'fetchModule'])->name('fetch.module');
+    Route::post('/admin/upload/module', [AdminController::class,'uploadModule'])->name('upload.module');
+    Route::get('/admin/show/allmodule', [AdminController::class,'showAllModule'])->name('get.module');
 });
     // Student Middleware
 Route::group(['middleware'=> ['web','checkStudent']], function(){
